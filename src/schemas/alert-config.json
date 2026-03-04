@@ -1,0 +1,97 @@
+{
+  "id": "alert-config-v1",
+  "version": "1.0",
+  "title": "告警规则配置",
+  "description": "演示纯字段联动：通知方式影响下方字段的显隐与必填状态，所有联动逻辑由 JSON Schema 描述，无需硬编码。",
+  "fields": [
+    {
+      "key": "ruleName",
+      "type": "input",
+      "label": "规则名称",
+      "rules": [
+        { "type": "required", "message": "请输入规则名称" },
+        { "type": "maxLength", "value": 50, "message": "名称不能超过 50 字符" }
+      ]
+    },
+    {
+      "key": "metric",
+      "type": "select",
+      "label": "监控指标",
+      "rules": [{ "type": "required", "message": "请选择监控指标" }],
+      "options": [
+        { "label": "CPU 使用率",  "value": "cpu"     },
+        { "label": "内存使用率",  "value": "mem"     },
+        { "label": "磁盘 IO",    "value": "disk_io" },
+        { "label": "网络带宽",    "value": "network" },
+        { "label": "请求错误率",  "value": "error_rate" }
+      ]
+    },
+    {
+      "key": "alertConfig",
+      "type": "component",
+      "component": "AlertRuleWidget",
+      "label": "触发条件配置",
+      "visible": { "field": "metric", "operator": "notEmpty" }
+    },
+    {
+      "key": "notifyType",
+      "type": "select",
+      "label": "通知方式",
+      "rules": [{ "type": "required", "message": "请选择通知方式" }],
+      "options": [
+        { "label": "仅邮件",        "value": "email"  },
+        { "label": "仅飞书",        "value": "feishu" },
+        { "label": "邮件 + 飞书",   "value": "both"   }
+      ]
+    },
+    {
+      "key": "emailList",
+      "type": "input",
+      "label": "收件人邮箱",
+      "placeholder": "多个邮箱用英文逗号分隔",
+      "visible": {
+        "logic": "or",
+        "conditions": [
+          { "field": "notifyType", "operator": "eq", "value": "email" },
+          { "field": "notifyType", "operator": "eq", "value": "both"  }
+        ]
+      },
+      "required": {
+        "logic": "or",
+        "conditions": [
+          { "field": "notifyType", "operator": "eq", "value": "email" },
+          { "field": "notifyType", "operator": "eq", "value": "both"  }
+        ]
+      },
+      "rules": [
+        { "type": "pattern", "value": "email-list", "message": "包含无效的邮箱地址" }
+      ]
+    },
+    {
+      "key": "feishuWebhook",
+      "type": "input",
+      "label": "飞书 Webhook 地址",
+      "placeholder": "https://open.feishu.cn/open-apis/bot/v2/hook/xxx",
+      "visible": {
+        "logic": "or",
+        "conditions": [
+          { "field": "notifyType", "operator": "eq", "value": "feishu" },
+          { "field": "notifyType", "operator": "eq", "value": "both"   }
+        ]
+      },
+      "required": {
+        "logic": "or",
+        "conditions": [
+          { "field": "notifyType", "operator": "eq", "value": "feishu" },
+          { "field": "notifyType", "operator": "eq", "value": "both"   }
+        ]
+      }
+    },
+    {
+      "key": "enabled",
+      "type": "switch",
+      "label": "立即启用",
+      "defaultValue": true
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "id": "server-ops-v1",
+  "version": "1.0",
+  "title": "服务器运维工单",
+  "description": "通过配置文件描述运维操作类型，运行时动态加载对应业务组件。选择不同操作类型，下方组件将实时切换。",
+  "fields": [
+    {
+      "key": "opType",
+      "type": "select",
+      "label": "操作类型",
+      "rules": [{ "type": "required", "message": "请选择操作类型" }],
+      "options": [
+        { "label": "服务器扩容",   "value": "scale"  },
+        { "label": "数据库备份",   "value": "backup" },
+        { "label": "负载均衡配置", "value": "lb"     }
+      ]
+    },
+    {
+      "key": "scaleConfig",
+      "type": "component",
+      "component": "ServerScaleWidget",
+      "label": "扩容配置",
+      "visible": { "field": "opType", "operator": "eq", "value": "scale" }
+    },
+    {
+      "key": "backupConfig",
+      "type": "component",
+      "component": "DatabaseBackupWidget",
+      "label": "备份配置",
+      "visible": { "field": "opType", "operator": "eq", "value": "backup" }
+    },
+    {
+      "key": "lbConfig",
+      "type": "component",
+      "component": "LoadBalancerWidget",
+      "label": "负载均衡配置",
+      "visible": { "field": "opType", "operator": "eq", "value": "lb" }
+    },
+    {
+      "key": "priority",
+      "type": "select",
+      "label": "优先级",
+      "defaultValue": "normal",
+      "options": [
+        { "label": "P0 - 紧急", "value": "p0"     },
+        { "label": "P1 - 高",   "value": "p1"     },
+        { "label": "P2 - 中",   "value": "normal" },
+        { "label": "P3 - 低",   "value": "low"    }
+      ]
+    },
+    {
+      "key": "reason",
+      "type": "textarea",
+      "label": "操作原因",
+      "placeholder": "请描述本次操作的目的和影响范围",
+      "required": { "field": "opType", "operator": "notEmpty" },
+      "rules": [
+        { "type": "minLength", "value": 10, "message": "原因描述不能少于 10 字" }
+      ]
+    },
+    {
+      "key": "notifyOnComplete",
+      "type": "switch",
+      "label": "完成后通知",
+      "defaultValue": true
+    }
+  ]
+}
